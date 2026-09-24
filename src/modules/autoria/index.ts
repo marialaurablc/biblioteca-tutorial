@@ -8,3 +8,6 @@ export type { ConsultaDeAutores, ResumoDoAutor } from "./ConsultaDeAutores";
 export { ProjecaoDeLivros } from "./ProjecaoDeLivros";
 export { SqliteAutorRepository } from "./infrastructure/SqliteAutorRepository";
 export { createAutoriaTables } from "./infrastructure/schema";
+export { CadastrarAutor } from "./features/cadastrar-autor/CadastrarAutor";
+export type { AutorJson } from "./output";
+export { registerRoutes } from "./routes";
