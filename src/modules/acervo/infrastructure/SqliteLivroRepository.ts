@@ -1,5 +1,6 @@
 import { db } from "../../../infrastructure/db";
 import { LivroId, AutorId } from "../../../shared/identifiers";
+import type { ConsultaDeLivros, ResumoDoLivro } from "../ConsultaDeLivros";
 import { Baixa, type MotivoDeBaixa } from "../domain/Baixa";
 import { Isbn } from "../domain/Isbn";
 import { Livro } from "../domain/Livro";
@@ -31,7 +32,17 @@ function toLivro(row: LivroRow): Livro {
   );
 }
 
-export class SqliteLivroRepository implements LivroRepository {
+function toResumo(livro: Livro): ResumoDoLivro {
+  return {
+    numeroRegistro: livro.numeroRegistro.value,
+    isbn: livro.isbn.value,
+    titulo: livro.titulo,
+  };
+}
+
+export class SqliteLivroRepository
+  implements LivroRepository, ConsultaDeLivros
+{
   contarCatalogadosNoAno(ano: string): number {
     const row = db
       .query(
@@ -100,6 +111,12 @@ export class SqliteLivroRepository implements LivroRepository {
       .all(...autorIds.map((autorId) => autorId.value)) as LivroRow[];
 
     return rows.map(toLivro);
+  }
+
+  noAcervoDoAutor(autorId: AutorId): ResumoDoLivro[] {
+    return this.findByAutorId(autorId)
+      .filter((livro) => livro.estaNoAcervo())
+      .map(toResumo);
   }
 
   registrarBaixa(livro: Livro): void {
